@@ -1,36 +1,73 @@
-# Create Autopuzzle
+# React + TypeScript + Vite
 
-WIP
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-> created by [create-create-app](https://github.com/uetchy/create-create-app).
+Currently, two official plugins are available:
 
-## Usage
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-```bash
-npx create-autopuzzle <name>
+## React Compiler
+
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+
+## Expanding the ESLint configuration
+
+If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+
+```js
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
+
+      // Remove tseslint.configs.recommended and replace with this
+      tseslint.configs.recommendedTypeChecked,
+      // Alternatively, use this for stricter rules
+      tseslint.configs.strictTypeChecked,
+      // Optionally, add this for stylistic rules
+      tseslint.configs.stylisticTypeChecked,
+
+      // Other configs...
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
 ```
 
-## Template string reference
+You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
 
-> Don't forget to remove this before publishing your package!
+```js
+// eslint.config.js
+import reactX from 'eslint-plugin-react-x'
+import reactDom from 'eslint-plugin-react-dom'
 
-- {{name}} => create-autopuzzle
-- {{upper name}} => CREATE-AUTOPUZZLE
-- {{lower name}} => create-autopuzzle
-- {{capital name}} => CreateAutopuzzle
-- {{capital name space=true}} => Create Autopuzzle
-- {{camel name}} => createAutopuzzle
-- {{snake name}} => create_autopuzzle
-- {{kebab name}} => create-autopuzzle
-- {{space name}} => create autopuzzle
-- {{uuid}} => 2ee92982-f2eb-47dd-884d-3c913ba8c8ca
-- {{upper (uuid)}} => A6CD38A7-398E-4A81-B6C3-1F9ABEDFB8D9
-- {{description}} => WIP
-- {{author}} => Dexter Richards
-- {{email}} => dexter.richards6@gmail.com
-- {{contact}} => Dexter Richards <dexter.richards6@gmail.com>
-- {{license}} => MIT
-- {{year}} => 2025
-- {{custom}} =>  (undefined until it is defined in `extra` field in `create` function arguments)
-
-See https://github.com/uetchy/create-create-app#template for the further details.
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
+      // Enable lint rules for React
+      reactX.configs['recommended-typescript'],
+      // Enable lint rules for React DOM
+      reactDom.configs.recommended,
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
+```
