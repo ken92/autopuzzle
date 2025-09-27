@@ -1,4 +1,3 @@
-import type { ComponentType } from 'react';
 import Sudoku from "./Sudoku";
 import WordSearch from './WordSearch';
 
@@ -11,7 +10,7 @@ export const games = {
 export type GameName = keyof typeof games;
 export const GAME_NAMES = Object.keys(games) as Array<GameName>;
 
-export function getGame(name: GameName): ComponentType | undefined {
+export function getGame(name: GameName) {
 	return games[name].component;
 }
 export const getLabel = (name: GameName) => games[name].label;

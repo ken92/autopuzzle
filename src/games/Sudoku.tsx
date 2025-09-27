@@ -1,9 +1,14 @@
-import AbstractGame from "./AbstractGame";
+import { Grid } from "@mui/material";
+import sudokuHelper from "../lib/sudokuHelper.js";
 
-class Sudoku extends AbstractGame {
-  public render(): React.ReactNode {
-    return <div>Sudoku Game</div>;
-  }
-}
+function Sudoku() {
+  const test = sudokuHelper.generate("easy");
+  console.log({ test });
+  return (
+    <Grid container component='div'>
+      asdfadsasd
+    </Grid>
+  );
+};
 
 export default Sudoku;
