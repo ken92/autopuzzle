@@ -1,6 +1,7 @@
 import GameSelectionList from './GameSelectionList';
 import type { GameName } from '../games';
 import { Button, Container, Grid, Typography } from '@mui/material';
+import Settings from './Settings';
 
 interface MainMenuProps {
   selectedGames: Partial<Record<GameName, boolean>>;
@@ -26,6 +27,7 @@ function MainMenu({ selectedGames, onToggleGame, onStartGame }: MainMenuProps) {
           selectedGames={selectedGames}
           onToggleGame={onToggleGame}
         />
+        <Settings />
         <Grid size={12} component='div'>
           <Button variant="contained" size='large' onClick={onStartGame}>Start!</Button>
         </Grid>

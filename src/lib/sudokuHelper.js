@@ -137,11 +137,13 @@ const sudoku = (function(root){
             if(single_candidates.length >= difficulty && 
                     sudoku._strip_dups(single_candidates).length >= 8){
                 var board = "";
+                var solvedBoard = "";
                 var givens_idxs = [];
                 for(var i in SQUARES){
                     var square = SQUARES[i];
                     if(candidates[square].length == 1){
                         board += candidates[square];
+                        solvedBoard += candidates[square];
                         givens_idxs.push(i);
                     } else {
                         board += sudoku.BLANK_CHAR;
@@ -163,7 +165,7 @@ const sudoku = (function(root){
                 // Double check board is solvable
                 // TODO: Make a standalone board checker. Solve is expensive.
                 if(sudoku.solve(board)){
-                    return board;
+                    return {board, solvedBoard};
                 }
             }
         }
@@ -404,7 +406,6 @@ const sudoku = (function(root){
                 sudoku._eliminate(candidates, square, other_val);
 
             if(!candidates_next){
-                //console.log("Contradiction found by _eliminate.");
                 return false;
             }
         }
@@ -670,8 +671,6 @@ const sudoku = (function(root){
                 display_string += H_BOX_PADDING;
             }
         }
-
-        console.log(display_string);
     };
 
     sudoku.validate_board = function(board){

@@ -1,8 +1,10 @@
-import { useState, type ComponentType } from 'react'
+import { useState } from 'react'
 import './App.css'
 import { getGame, type GameName } from './games';
-import { Container } from '@mui/material';
+import { Box, Container } from '@mui/material';
 import MainMenu from './lib/MainMenu';
+import type { GameDifficulty } from './lib/types';
+import Title from './lib/Title';
 
 enum GameState {
   MAIN_MENU = 'main_menu',
@@ -18,7 +20,9 @@ const getRandomGameName = (games: GameName[]): GameName | null => {
 function App() {
   const [gameState, setGameState] = useState<GameState>(GameState.MAIN_MENU);
   const [selectedGames, setSelectedGames] = useState<Partial<Record<GameName, boolean>>>({});
+  const [selectedDifficulties, setSelectedDifficulties] = useState<Partial<Record<GameName, GameDifficulty>>>({});
   const [currentGameName, setCurrentGameName] = useState<GameName | null>(null);
+  const [showSolution, setShowSolution] = useState<boolean>(false);
 
   const handleStartGame = () => {
     const game = getRandomGameName(Object.keys(selectedGames).filter((game) => selectedGames[game as GameName]) as GameName[]);
@@ -30,6 +34,7 @@ function App() {
 
   const handleToggleGame = (game: GameName) => {
     setSelectedGames((prev) => ({ ...prev, [game]: !prev[game] }));
+    setSelectedDifficulties((prev) => ({ ...prev, [game]: prev[game] || 'hard' }));
   };
 
   const getGameStateComponent = () => {
@@ -43,10 +48,10 @@ function App() {
           />
         );
       case GameState.IN_GAME:
-        console.log({ currentGame: currentGameName });
-        if (!currentGameName) return <div>No game selected</div>;
+        if (!currentGameName) return <Title>No game selected</Title>;
         const GameComponent = getGame(currentGameName);
-        return <GameComponent />;
+        const difficulty = selectedDifficulties[currentGameName] || 'hard';
+        return <GameComponent difficulty={difficulty} showSolution={showSolution} />;
       default:
         return null;
     }
@@ -54,7 +59,9 @@ function App() {
 
   return (
     <Container>
-      {getGameStateComponent()}
+      <Box height='80vh'>
+        {getGameStateComponent()}
+      </Box>
     </Container>
   )
 }
