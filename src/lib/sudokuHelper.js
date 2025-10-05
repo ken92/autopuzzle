@@ -26,12 +26,12 @@ const sudoku = (function(root){
     // Define difficulties by how many squares are given to the player in a new
     // puzzle.
     var DIFFICULTY = {
-        "easy":         62,
-        "medium":       53,
-        "hard":         44,
-        "very-hard":    35,
-        "insane":       26,
-        "inhuman":      17,
+        "easy":         50,
+        "medium":       40,
+        "hard":         25,
+        "very-hard":    20,
+        "insane":       15,
+        "inhuman":      10,
     };
 
     // Blank character and board representation
