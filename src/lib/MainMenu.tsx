@@ -9,9 +9,11 @@ export interface MainMenuProps {
   onStartGame: () => void;
   gameLengthSeconds: number;
   setGameLengthSeconds: (seconds: number) => void;
+  showSolutionSeconds: number;
+  setShowSolutionSeconds: (seconds: number) => void;
 }
 
-function MainMenu({ selectedGames, onToggleGame, onStartGame, gameLengthSeconds, setGameLengthSeconds }: MainMenuProps) {
+function MainMenu({ selectedGames, onToggleGame, onStartGame, gameLengthSeconds, setGameLengthSeconds, showSolutionSeconds, setShowSolutionSeconds }: MainMenuProps) {
   return (
     <Container>
       <Grid container spacing={2}>
@@ -32,6 +34,8 @@ function MainMenu({ selectedGames, onToggleGame, onStartGame, gameLengthSeconds,
         <Settings
           gameLengthSeconds={gameLengthSeconds}
           setGameLengthSeconds={setGameLengthSeconds}
+          showSolutionSeconds={showSolutionSeconds}
+          setShowSolutionSeconds={setShowSolutionSeconds}
         />
         <Grid size={12} component='div'>
           <Button variant="contained" size='large' onClick={onStartGame}>Start!</Button>

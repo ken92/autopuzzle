@@ -6,7 +6,7 @@ import MainMenu from './lib/MainMenu';
 import type { GameDifficulty } from './lib/types';
 
 const DEFAULT_GAME_LENGTH_SECONDS = 60;
-const DEFAULT_SOLUTION_DISPLAY_SECONDS = 2;
+const DEFAULT_SOLUTION_DISPLAY_SECONDS = 10;
 
 enum GameState {
   MAIN_MENU = 'main_menu',
@@ -28,6 +28,7 @@ function App() {
   const [showSolution, setShowSolution] = useState<boolean>(false);
   const [gameInstanceKey, setGameInstanceKey] = useState<number>(0);
   const [gameLengthSeconds, setGameLengthSeconds] = useState<number>(DEFAULT_GAME_LENGTH_SECONDS);
+  const [showSolutionSeconds, setShowSolutionSeconds] = useState<number>(DEFAULT_SOLUTION_DISPLAY_SECONDS);
   const [secondsLeft, setSecondsLeft] = useState<number>(DEFAULT_GAME_LENGTH_SECONDS);
 
   const handleTimerEnd = () => {
@@ -36,7 +37,7 @@ function App() {
       setShowSolution(false);
       setGameInstanceKey((prev) => prev + 1);
       handleStartGame();
-    }, 1000 * DEFAULT_SOLUTION_DISPLAY_SECONDS);
+    }, 1000 * showSolutionSeconds);
   };
 
   const handleStartGame = () => {
@@ -92,6 +93,8 @@ function App() {
               onStartGame={handleStartGame}
               gameLengthSeconds={gameLengthSeconds}
               setGameLengthSeconds={setGameLengthSeconds}
+              showSolutionSeconds={showSolutionSeconds}
+              setShowSolutionSeconds={setShowSolutionSeconds}
             />
           ) : GameStateComponent && currentGameName ? (
             <GameStateComponent
