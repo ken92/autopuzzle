@@ -3,13 +3,15 @@ import type { GameName } from '../games';
 import { Button, Container, Grid, Typography } from '@mui/material';
 import Settings from './Settings';
 
-interface MainMenuProps {
+export interface MainMenuProps {
   selectedGames: Partial<Record<GameName, boolean>>;
   onToggleGame: (game: GameName) => void;
   onStartGame: () => void;
+  gameLengthSeconds: number;
+  setGameLengthSeconds: (seconds: number) => void;
 }
 
-function MainMenu({ selectedGames, onToggleGame, onStartGame }: MainMenuProps) {
+function MainMenu({ selectedGames, onToggleGame, onStartGame, gameLengthSeconds, setGameLengthSeconds }: MainMenuProps) {
   return (
     <Container>
       <Grid container spacing={2}>
@@ -27,7 +29,10 @@ function MainMenu({ selectedGames, onToggleGame, onStartGame }: MainMenuProps) {
           selectedGames={selectedGames}
           onToggleGame={onToggleGame}
         />
-        <Settings />
+        <Settings
+          gameLengthSeconds={gameLengthSeconds}
+          setGameLengthSeconds={setGameLengthSeconds}
+        />
         <Grid size={12} component='div'>
           <Button variant="contained" size='large' onClick={onStartGame}>Start!</Button>
         </Grid>

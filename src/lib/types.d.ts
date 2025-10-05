@@ -3,4 +3,5 @@ export type GameDifficulty = 'easy' | 'medium' | 'hard' | 'very-hard' | 'insane'
 export interface GameProps {
   difficulty: GameDifficulty;
   showSolution: boolean;
+  secondsLeft: number;
 }

@@ -16,11 +16,11 @@ function boardToGrid(board: string): string[][] {
 }
 
 export default function SudokuBoard({ board, cellSize = 60 }: SudokuBoardProps) {
-  const grid = boardToGrid(board);
-
+  let validGrid = board;
   if (!board || board.length !== 81) {
-    return <Typography color="error">Invalid board: expected 81 characters</Typography>;
+    validGrid = '.'.repeat(81);
   }
+  const grid = boardToGrid(validGrid);
 
   return (
     <Box

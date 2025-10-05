@@ -3,8 +3,9 @@ import sudokuHelper from "../lib/sudokuHelper.js";
 import SudokuBoard from "../lib/SudokuBoard.js";
 import type { GameProps } from "../lib/types.js";
 import { useEffect, useState } from "react";
+import Timer from "../lib/Timer.js";
 
-function Sudoku({ difficulty, showSolution }: GameProps) {
+function Sudoku({ difficulty, showSolution, secondsLeft }: GameProps) {
   const [board, setBoard] = useState<string | null>(null);
   const [solvedBoard, setSolvedBoard] = useState<string | null>(null);
 
@@ -18,6 +19,7 @@ function Sudoku({ difficulty, showSolution }: GameProps) {
   return (
     <Grid container component='div'>
       <SudokuBoard board={showBoard} />
+      <Timer secondsLeft={secondsLeft} />
     </Grid>
   );
 };

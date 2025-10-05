@@ -137,13 +137,11 @@ const sudoku = (function(root){
             if(single_candidates.length >= difficulty && 
                     sudoku._strip_dups(single_candidates).length >= 8){
                 var board = "";
-                var solvedBoard = "";
                 var givens_idxs = [];
                 for(var i in SQUARES){
                     var square = SQUARES[i];
                     if(candidates[square].length == 1){
                         board += candidates[square];
-                        solvedBoard += candidates[square];
                         givens_idxs.push(i);
                     } else {
                         board += sudoku.BLANK_CHAR;
@@ -164,7 +162,8 @@ const sudoku = (function(root){
                 
                 // Double check board is solvable
                 // TODO: Make a standalone board checker. Solve is expensive.
-                if(sudoku.solve(board)){
+                const solvedBoard = sudoku.solve(board);
+                if(solvedBoard){
                     return {board, solvedBoard};
                 }
             }
