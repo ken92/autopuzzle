@@ -2,6 +2,7 @@ import GameSelectionList from './GameSelectionList';
 import type { GameName } from '../games';
 import { Button, Container, Grid, Typography } from '@mui/material';
 import Settings from './Settings';
+import { useMemo } from 'react';
 
 export interface MainMenuProps {
   selectedGames: Partial<Record<GameName, boolean>>;
@@ -14,6 +15,11 @@ export interface MainMenuProps {
 }
 
 function MainMenu({ selectedGames, onToggleGame, onStartGame, gameLengthSeconds, setGameLengthSeconds, showSolutionSeconds, setShowSolutionSeconds }: MainMenuProps) {
+  const aGameIsSelected = useMemo(() => {
+    const keys = Object.keys(selectedGames) as GameName[];
+    if (keys.length === 0) return false;
+    return keys.some((key) => selectedGames[key]);
+  }, [selectedGames]);
   return (
     <Container>
       <Grid container spacing={2}>
@@ -38,7 +44,7 @@ function MainMenu({ selectedGames, onToggleGame, onStartGame, gameLengthSeconds,
           setShowSolutionSeconds={setShowSolutionSeconds}
         />
         <Grid size={12} component='div'>
-          <Button variant="contained" size='large' onClick={onStartGame}>Start!</Button>
+          <Button variant="contained" size='large' disabled={!aGameIsSelected} onClick={onStartGame}>Start!</Button>
         </Grid>
       </Grid>
     </Container>
