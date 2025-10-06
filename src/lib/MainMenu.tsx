@@ -4,6 +4,7 @@ import { Button, Container, Grid, Typography } from '@mui/material';
 import Settings from './Settings';
 import { useMemo } from 'react';
 import type { GameDifficulty } from './types';
+import type { WordBankKey } from './wordBank';
 
 export interface MainMenuProps {
   selectedGames: Partial<Record<GameName, boolean>>;
@@ -15,9 +16,12 @@ export interface MainMenuProps {
   setShowSolutionSeconds: (seconds: number) => void;
   selectedDifficulties: Partial<Record<GameName, GameDifficulty>>;
   setSelectedDifficulties: (difficulties: Partial<Record<GameName, GameDifficulty>>) => void;
+  selectedWordBanks: Set<WordBankKey>;
+  toggleWordBank: (bank: WordBankKey, newValue: boolean) => void;
+  toggleSelectAllWordBanks: (newValue: boolean) => void;
 }
 
-function MainMenu({ selectedGames, onToggleGame, onStartGame, gameLengthSeconds, setGameLengthSeconds, showSolutionSeconds, setShowSolutionSeconds, selectedDifficulties, setSelectedDifficulties }: MainMenuProps) {
+function MainMenu({ selectedGames, onToggleGame, onStartGame, gameLengthSeconds, setGameLengthSeconds, showSolutionSeconds, setShowSolutionSeconds, selectedDifficulties, setSelectedDifficulties, selectedWordBanks, toggleWordBank, toggleSelectAllWordBanks }: MainMenuProps) {
   const [aGameIsSelected, truthyDifficulties] = useMemo(() => {
     const keys = Object.keys(selectedGames) as GameName[];
     if (keys.length === 0) return [false, {}];
@@ -31,7 +35,7 @@ function MainMenu({ selectedGames, onToggleGame, onStartGame, gameLengthSeconds,
     return [truthySelectedGameKeys.length > 0, truthyDifficulties];
   }, [selectedGames, selectedDifficulties]);
   return (
-    <Container>
+    <Container style={{ marginTop: '2em', paddingBottom: '10em' }}>
       <Grid container spacing={2}>
         <Grid size={12} component='div'>
           <Typography variant="h1" gutterBottom>
@@ -54,6 +58,9 @@ function MainMenu({ selectedGames, onToggleGame, onStartGame, gameLengthSeconds,
           setShowSolutionSeconds={setShowSolutionSeconds}
           selectedDifficulties={truthyDifficulties}
           setSelectedDifficulties={setSelectedDifficulties}
+          selectedWordBanks={selectedWordBanks}
+          toggleWordBank={toggleWordBank}
+          toggleSelectAllWordBanks={toggleSelectAllWordBanks}
         />
         <Grid size={12} component='div'>
           <Button variant="contained" size='large' disabled={!aGameIsSelected} onClick={onStartGame}>Start!</Button>

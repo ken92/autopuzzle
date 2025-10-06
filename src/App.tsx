@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import './App.css'
 import { getGame, type GameName } from './games';
-import { Box, Container } from '@mui/material';
+import { Box } from '@mui/material';
 import MainMenu from './lib/MainMenu';
 import type { GameDifficulty } from './lib/types';
+import { BANK_LABELS, type WordBankKey } from './lib/wordBank';
 
 const DEFAULT_GAME_LENGTH_SECONDS = 60;
 const DEFAULT_SOLUTION_DISPLAY_SECONDS = 10;
@@ -21,6 +22,7 @@ const getRandomGameName = (games: GameName[]): GameName | null => {
 
 function App() {
   const timerRef = useRef<number | null>(null);
+  const [selectedWordBanks, setSelectedWordBanks] = useState<Set<WordBankKey>>(new Set());
   const [gameState, setGameState] = useState<GameState>(GameState.MAIN_MENU);
   const [selectedGames, setSelectedGames] = useState<Partial<Record<GameName, boolean>>>({});
   const [selectedDifficulties, setSelectedDifficulties] = useState<Partial<Record<GameName, GameDifficulty>>>({});
@@ -58,6 +60,7 @@ function App() {
             handleTimerEnd();
             return 0;
           }
+          window.scrollTo(0, 0);
           return prev - 1;
         });
       }, 1000);
@@ -77,38 +80,55 @@ function App() {
     setSelectedDifficulties((prev) => ({ ...prev, [game]: prev[game] || 'hard' }));
   };
 
+  const handleToggleWordBank = (bank: WordBankKey, newValue: boolean) => {
+    setSelectedWordBanks((prev) => {
+      const copy = new Set(prev);
+      if (!newValue) copy.delete(bank);
+      else copy.add(bank);
+      return copy;
+    });
+  };
+
+  const handleToggleAllWordBanks = (newValue: boolean) => {
+    if (!newValue) {
+      setSelectedWordBanks(new Set());
+    } else {
+      setSelectedWordBanks(new Set(BANK_LABELS as WordBankKey[]));
+    }
+  };
+
   const GameStateComponent = useMemo(() => {
     if (!currentGameName) return null;
     return getGame(currentGameName);
   }, [currentGameName]);
 
   return (
-    <Container>
-      <Box height='80vh'>
-        <Box height='80vh'>
-          {gameState === GameState.MAIN_MENU ? (
-            <MainMenu
-              selectedGames={selectedGames}
-              onToggleGame={handleToggleGame}
-              onStartGame={handleStartGame}
-              gameLengthSeconds={gameLengthSeconds}
-              setGameLengthSeconds={setGameLengthSeconds}
-              showSolutionSeconds={showSolutionSeconds}
-              setShowSolutionSeconds={setShowSolutionSeconds}
-              selectedDifficulties={selectedDifficulties}
-              setSelectedDifficulties={setSelectedDifficulties}
-            />
-          ) : GameStateComponent && currentGameName ? (
-            <GameStateComponent
-              difficulty={selectedDifficulties[currentGameName] || 'hard'}
-              showSolution={showSolution}
-              secondsLeft={secondsLeft}
-              key={gameInstanceKey}
-            />
-          ) : null}
-        </Box>
-      </Box>
-    </Container>
+    <Box width='100%'>
+      {gameState === GameState.MAIN_MENU ? (
+        <MainMenu
+          selectedGames={selectedGames}
+          onToggleGame={handleToggleGame}
+          onStartGame={handleStartGame}
+          gameLengthSeconds={gameLengthSeconds}
+          setGameLengthSeconds={setGameLengthSeconds}
+          showSolutionSeconds={showSolutionSeconds}
+          setShowSolutionSeconds={setShowSolutionSeconds}
+          selectedDifficulties={selectedDifficulties}
+          setSelectedDifficulties={setSelectedDifficulties}
+          selectedWordBanks={selectedWordBanks}
+          toggleWordBank={handleToggleWordBank}
+          toggleSelectAllWordBanks={handleToggleAllWordBanks}
+        />
+      ) : GameStateComponent && currentGameName ? (
+        <GameStateComponent
+          difficulty={selectedDifficulties[currentGameName] || 'hard'}
+          showSolution={showSolution}
+          secondsLeft={secondsLeft}
+          key={gameInstanceKey}
+          wordBanks={selectedWordBanks}
+        />
+      ) : null}
+    </Box>
   )
 }
 

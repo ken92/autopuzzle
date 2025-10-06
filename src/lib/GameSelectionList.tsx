@@ -1,5 +1,5 @@
 import { alpha, Box, Grid, styled } from "@mui/material";
-import { getLabel, type GameName } from "../games";
+import { GAME_NAMES, getLabel, type GameName } from "../games";
 import Title from "./Title";
 
 const GameCard = styled(Box, { shouldForwardProp: (prop) => prop !== 'selected' })<{
@@ -25,14 +25,13 @@ interface GameSelectionListProps {
 
 const GameSelectionList = ({ selectedGames, onToggleGame }: GameSelectionListProps) => {
   return (
-    <Grid container spacing={2} size={6}>
+    <Grid container spacing={2} size={6} alignItems='left'>
       <Grid size={12} component='div'>
         <Title>
           Game Options
         </Title>
       </Grid>
-      {/* TODO use GAME_NAMES */}
-      {(['Sudoku'] as Array<GameName>).map((gameName) => (
+      {GAME_NAMES.map((gameName) => (
         <Grid size='auto' key={gameName} component='div'>
           <GameCard onClick={() => onToggleGame(gameName)} selected={Boolean(selectedGames[gameName])}>
             {getLabel(gameName)}
