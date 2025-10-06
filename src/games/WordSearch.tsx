@@ -105,9 +105,8 @@ export default function WordSearch({ difficulty, showSolution, secondsLeft, word
     const display = grid.map(r => r.slice());
     fillRandomLetters(display);
     const cellSize = Math.max(20, Math.min(60, Math.floor(600 / width)));
-    console.log({wordsToFind});
     return { wordsToFind, width, solvedBoard, displayBoard: display, cellSize };
-  }, [difficulty]);
+  }, [difficulty, wordBanks]);
 
   if (!solvedBoard || !displayBoard) return <Typography>Generating...</Typography>;
 
