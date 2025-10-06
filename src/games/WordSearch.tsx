@@ -115,10 +115,10 @@ export default function WordSearch({ difficulty, showSolution, secondsLeft, word
   const displayString = displayBoard.map((r) => r.join('')).join('');
 
   return (
-    <Grid container direction="column" alignItems="center" spacing={2}>
+    <Grid container direction="column" alignItems="center" spacing={1}>
       <WordSearchBoard width={width} board={showSolution ? solvedString : displayString} cellSize={cellSize} />
       <Timer secondsLeft={secondsLeft} />
-      <Grid container spacing={1}>
+      <Grid container spacing={0.2}>
         {wordsToFind.map((word) => (
           <Grid key={word}>
             <Box
@@ -130,7 +130,7 @@ export default function WordSearch({ difficulty, showSolution, secondsLeft, word
                 border: `1px solid ${theme.palette.divider}`,
               })}
             >
-              <Typography variant="body1" fontSize={`${Math.floor(wordsToFind.length * 0.3) / 30}rem`}>{word}</Typography>
+              <Typography variant="body1" fontSize={`${Math.floor(wordsToFind.length * 0.4) / 32}rem`}>{word}</Typography>
             </Box>
           </Grid>
         ))}
