@@ -1932,7 +1932,7 @@ export const US_CRYPTIDS = [
   'shunka warakin',
   'skinwalker',
   'skunk ape',
-  'snallygaster',
+  'snallygoster',
   'squonk',
   'stikini',
   'tailypo',
