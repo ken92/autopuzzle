@@ -95,6 +95,8 @@ function App() {
               setGameLengthSeconds={setGameLengthSeconds}
               showSolutionSeconds={showSolutionSeconds}
               setShowSolutionSeconds={setShowSolutionSeconds}
+              selectedDifficulties={selectedDifficulties}
+              setSelectedDifficulties={setSelectedDifficulties}
             />
           ) : GameStateComponent && currentGameName ? (
             <GameStateComponent

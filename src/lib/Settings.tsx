@@ -1,16 +1,20 @@
 import { FormControl, Grid, InputLabel, MenuItem, Select } from "@mui/material";
 import Title from "./Title";
+import { games, type GameName } from "../games";
+import { gameDifficulties, type GameDifficulty } from "./types";
 
 interface SettingsProps {
   gameLengthSeconds: number;
   setGameLengthSeconds: (seconds: number) => void;
   showSolutionSeconds: number;
   setShowSolutionSeconds: (seconds: number) => void;
+  selectedDifficulties: Partial<Record<GameName, GameDifficulty>>;
+  setSelectedDifficulties: (difficulties: Partial<Record<GameName, GameDifficulty>>) => void;
 };
 
-const Settings = ({ gameLengthSeconds, setGameLengthSeconds, showSolutionSeconds, setShowSolutionSeconds }: SettingsProps) => {
+const Settings = ({ gameLengthSeconds, setGameLengthSeconds, showSolutionSeconds, setShowSolutionSeconds, selectedDifficulties, setSelectedDifficulties }: SettingsProps) => {
   return (
-    <Grid container spacing={2} size={6} rowSpacing={4}>
+    <Grid container size={6} minHeight='30em' alignItems='flex-start'>
       <Grid size={12} component='div'>
         <Title>
           Settings
@@ -53,6 +57,24 @@ const Settings = ({ gameLengthSeconds, setGameLengthSeconds, showSolutionSeconds
           </Select>
         </FormControl>
       </Grid>
+
+      {(Object.keys(selectedDifficulties) as GameName[]).map((gameName) => (
+        <Grid size={12} component='div' alignItems='left'>
+          <FormControl fullWidth>
+            <InputLabel id={`difficulty-${gameName}`} style={{ color: 'white' }}>{games[gameName].label} Difficulty</InputLabel>
+            <Select
+              labelId={`difficulty-${gameName}`}
+              value={selectedDifficulties[gameName] || 'hard'}
+              onChange={(e) => setSelectedDifficulties({ ...selectedDifficulties, [gameName]: e.target.value as GameDifficulty })}
+              style={{ color: 'white' }}
+            >
+              {gameDifficulties.map(difficulty => (
+                <MenuItem key={difficulty} value={difficulty}>{difficulty}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Grid>
+      ))}
     </Grid>
   );
 };
