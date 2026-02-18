@@ -137,26 +137,12 @@ const sudoku = (function(root){
             if(single_candidates.length >= difficulty && 
                     sudoku._strip_dups(single_candidates).length >= 8){
                 var board = "";
-                var givens_idxs = [];
                 for(var i in SQUARES){
                     var square = SQUARES[i];
                     if(candidates[square].length == 1){
                         board += candidates[square];
-                        givens_idxs.push(i);
                     } else {
                         board += sudoku.BLANK_CHAR;
-                    }
-                }
-                
-                // If we have more than `difficulty` givens, remove some random
-                // givens until we're down to exactly `difficulty`
-                var nr_givens = givens_idxs.length;
-                if(nr_givens > difficulty){
-                    givens_idxs = sudoku._shuffle(givens_idxs);
-                    for(var i = 0; i < nr_givens - difficulty; ++i){
-                        var target = parseInt(givens_idxs[i]);
-                        board = board.substr(0, target) + sudoku.BLANK_CHAR + 
-                            board.substr(target + 1);
                     }
                 }
                 
@@ -164,7 +150,29 @@ const sudoku = (function(root){
                 // TODO: Make a standalone board checker. Solve is expensive.
                 const solvedBoard = sudoku.solve(board);
                 if(solvedBoard){
-                    return {board, solvedBoard};
+                    var all_idxs = [];
+                    for(var idx = 0; idx < NR_SQUARES; ++idx){
+                        all_idxs.push(idx);
+                    }
+                    var keep_idxs = sudoku._select_balanced_givens(
+                        all_idxs, difficulty
+                    );
+                    var keep_map = {};
+                    for(var ki in keep_idxs){
+                        keep_map[keep_idxs[ki]] = true;
+                    }
+
+                    var board_chars = solvedBoard.split("");
+                    for(var bi = 0; bi < board_chars.length; ++bi){
+                        if(!keep_map[bi]){
+                            board_chars[bi] = sudoku.BLANK_CHAR;
+                        }
+                    }
+                    var balanced_board = board_chars.join("");
+                    const reSolvedBoard = sudoku.solve(balanced_board);
+                    if(reSolvedBoard){
+                        return {board: balanced_board, solvedBoard: reSolvedBoard};
+                    }
                 }
             }
         }
@@ -736,19 +744,21 @@ const sudoku = (function(root){
         /* Return a shuffled version of `seq`
         */
         
-        // Create an array of the same size as `seq` filled with false
+        // Track slot usage separately so falsy values (e.g. 0) are safe.
         var shuffled = [];
+        var used = [];
         for(var i = 0; i < seq.length; ++i){
-            shuffled.push(false);
+            used.push(false);
         }
         
         for(var i in seq){
             var ti = sudoku._rand_range(seq.length);
             
-            while(shuffled[ti]){
+            while(used[ti]){
                 ti = (ti + 1) > (seq.length - 1) ? 0 : (ti + 1);
             }
             
+            used[ti] = true;
             shuffled[ti] = seq[i];
         }
         
@@ -781,6 +791,134 @@ const sudoku = (function(root){
             }
         }
         return seq_set;
+    };
+
+    sudoku._index_to_row = function(index){
+        return Math.floor(index / 9);
+    };
+
+    sudoku._index_to_col = function(index){
+        return index % 9;
+    };
+
+    sudoku._index_to_box = function(index){
+        var row = sudoku._index_to_row(index);
+        var col = sudoku._index_to_col(index);
+        return Math.floor(row / 3) * 3 + Math.floor(col / 3);
+    };
+
+    sudoku._choose_best_idx = function(candidates, row_counts, col_counts,
+            box_counts, band_counts, stack_counts){
+        var best_idx = null;
+        var best_score = Infinity;
+        var shuffled = sudoku._shuffle(candidates);
+        for(var ci in shuffled){
+            var idx = shuffled[ci];
+            var row = sudoku._index_to_row(idx);
+            var col = sudoku._index_to_col(idx);
+            var box = sudoku._index_to_box(idx);
+            var band = Math.floor(row / 3);
+            var stack = Math.floor(col / 3);
+            var score = row_counts[row] + col_counts[col] +
+                (box_counts[box] * 2) + band_counts[band] + stack_counts[stack];
+
+            if(score < best_score){
+                best_score = score;
+                best_idx = idx;
+            }
+        }
+        return best_idx;
+    };
+
+    sudoku._select_balanced_givens = function(givens_idxs, difficulty){
+        var givens = givens_idxs.slice();
+        if(givens.length <= difficulty){
+            return givens;
+        }
+
+        var keep = [];
+        var keep_map = {};
+        var row_counts = [0,0,0,0,0,0,0,0,0];
+        var col_counts = [0,0,0,0,0,0,0,0,0];
+        var box_counts = [0,0,0,0,0,0,0,0,0];
+        var band_counts = [0,0,0];
+        var stack_counts = [0,0,0];
+        var box_cells = [[],[],[],[],[],[],[],[],[]];
+
+        for(var gi in givens){
+            var idx = givens[gi];
+            var box = sudoku._index_to_box(idx);
+            box_cells[box].push(idx);
+        }
+
+        var min_per_box = Math.floor(difficulty / 9);
+        var box_targets = [min_per_box,min_per_box,min_per_box,min_per_box,
+            min_per_box,min_per_box,min_per_box,min_per_box,min_per_box];
+        var extra = difficulty - (min_per_box * 9);
+
+        var box_order = sudoku._shuffle([0,1,2,3,4,5,6,7,8]);
+        box_order.sort(function(a, b){
+            return box_cells[b].length - box_cells[a].length;
+        });
+        for(var ei = 0; ei < extra; ++ei){
+            box_targets[box_order[ei % box_order.length]] += 1;
+        }
+
+        var add_idx = function(idx){
+            if(keep_map[idx]){
+                return;
+            }
+            keep_map[idx] = true;
+            keep.push(idx);
+
+            var row = sudoku._index_to_row(idx);
+            var col = sudoku._index_to_col(idx);
+            var box = sudoku._index_to_box(idx);
+            row_counts[row] += 1;
+            col_counts[col] += 1;
+            box_counts[box] += 1;
+            band_counts[Math.floor(row / 3)] += 1;
+            stack_counts[Math.floor(col / 3)] += 1;
+        };
+
+        // Fill each 3x3 box up to its target to avoid large empty regions.
+        for(var boi in box_order){
+            var box = box_order[boi];
+            while(box_counts[box] < box_targets[box] && keep.length < difficulty){
+                var available = [];
+                for(var ci in box_cells[box]){
+                    var candidate = box_cells[box][ci];
+                    if(!keep_map[candidate]){
+                        available.push(candidate);
+                    }
+                }
+                if(available.length === 0){
+                    break;
+                }
+                var chosen = sudoku._choose_best_idx(available, row_counts,
+                    col_counts, box_counts, band_counts, stack_counts);
+                add_idx(chosen);
+            }
+        }
+
+        // Fill remaining slots by globally favoring low-count rows/cols/boxes.
+        while(keep.length < difficulty){
+            var remaining = [];
+            for(var ri in givens){
+                var idx = givens[ri];
+                if(!keep_map[idx]){
+                    remaining.push(idx);
+                }
+            }
+            if(remaining.length === 0){
+                break;
+            }
+            var next = sudoku._choose_best_idx(remaining, row_counts,
+                col_counts, box_counts, band_counts, stack_counts);
+            add_idx(next);
+        }
+
+        return keep;
     };
     
     sudoku._force_range = function(nr, max, min){
