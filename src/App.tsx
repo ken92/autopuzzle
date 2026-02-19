@@ -17,10 +17,15 @@ enum GameState {
   IN_GAME = 'in_game',
 }
 
-const getRandomGameName = (games: GameName[]): GameName | null => {
+const getRandomGameName = (games: GameName[], previousGame: GameName | null): GameName | null => {
   if (games.length === 0) return null;
-  const randomIndex = Math.floor(Math.random() * games.length);
-  return games[randomIndex];
+  const candidateGames =
+    previousGame === 'Reader'
+      ? games.filter((gameName) => gameName !== 'Reader')
+      : games;
+  const pool = candidateGames.length > 0 ? candidateGames : games;
+  const randomIndex = Math.floor(Math.random() * pool.length);
+  return pool[randomIndex];
 };
 
 function App() {
@@ -118,7 +123,7 @@ function App() {
       }
     }
 
-    const game = getRandomGameName(eligibleGameNames);
+    const game = getRandomGameName(eligibleGameNames, currentGameName);
     if (game) {
       setCurrentGameName(game);
       setGameState(GameState.IN_GAME);
